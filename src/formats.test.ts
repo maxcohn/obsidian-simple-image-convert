@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { inputMimeType, isAnimated } from './formats';
+import { inputMimeType, isAnimated, withExtension } from './formats';
 
 const ascii = (text: string) => [...text].map((c) => c.charCodeAt(0));
 const uint32 = (n: number) => [(n >>> 24) & 0xff, (n >>> 16) & 0xff, (n >>> 8) & 0xff, n & 0xff];
@@ -42,6 +42,13 @@ describe('inputMimeType', () => {
 		expect(inputMimeType('heic')).toBeUndefined();
 		expect(inputMimeType('md')).toBeUndefined();
 		expect(inputMimeType('constructor')).toBeUndefined();
+	});
+});
+
+describe('withExtension', () => {
+	it('replaces only the final extension', () => {
+		expect(withExtension('photo.jpg', 'webp')).toBe('photo.webp');
+		expect(withExtension('a.b/IMG_1.final.JPEG', 'webp')).toBe('a.b/IMG_1.final.webp');
 	});
 });
 

@@ -53,7 +53,7 @@ The pipeline is **bytes → `ImageData` → bytes**:
 3. Decode with the platform: `createImageBitmap`, drawn to a canvas, read back with `getImageData`. EXIF orientation is applied here.
 4. Encode with the selected encoder.
 5. If the output is larger than the input, warn.
-6. Write the result: rename the file to the new extension (which updates links), write the new bytes, and send the original bytes to the trash.
+6. Write the result: rename the file to the new extension (which updates links), write the new bytes, and send the original bytes to the trash. When the input is already in the output format (recompressing a WebP), the original is trashed and the output is written at the same path, so links are untouched.
 
 `ImageData` is the seam between decoding and encoding. Decoders know nothing about output formats, and encoders know nothing about input formats.
 

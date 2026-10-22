@@ -11,3 +11,10 @@ export function formatBytes(bytes: number): string {
 	const digits = unit === 0 || value >= 100 ? 0 : 1;
 	return `${value.toFixed(digits)} ${UNITS[unit]}`;
 }
+
+/** Formats the relative change from one size to another, e.g. "−72%" or "+5%". */
+export function formatSizeChange(before: number, after: number): string {
+	const percent = Math.round(((after - before) / before) * 100);
+	const sign = percent > 0 ? '+' : percent < 0 ? '−' : '±';
+	return `${sign}${Math.abs(percent)}%`;
+}

@@ -19,6 +19,11 @@ export function inputMimeType(extension: string): string | undefined {
 	return INPUT_MIME_TYPES.get(extension.toLowerCase());
 }
 
+/** Replaces the extension of a path that has one, e.g. ("a/b.jpg", "webp") → "a/b.webp". */
+export function withExtension(path: string, extension: string): string {
+	return `${path.slice(0, path.lastIndexOf('.') + 1)}${extension}`;
+}
+
 /**
  * Whether the image has more than one frame. Decoding keeps only the first
  * frame, so animated images are refused rather than silently flattened.
