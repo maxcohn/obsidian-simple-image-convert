@@ -1,0 +1,10 @@
+{
+	"id": "simple-image-convert",
+	"name": "Simple Image Convert",
+	"version": "0.1.0",
+	"minAppVersion": "1.6.6",
+	"description": "Convert and compress images to WebP from the file menu.",
+	"author": "Maxwell Cohn",
+	"authorUrl": "https://maxcohn.org",
+	"isDesktopOnly": false
+}
