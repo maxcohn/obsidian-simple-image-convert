@@ -69,7 +69,7 @@ interface ImageEncoder {
 }
 ```
 
-WebP uses libwebp compiled to WASM (`@jsquash/webp`, Apache-2.0 / BSD) on **every** platform. iOS can't produce WebP through `canvas.toBlob`, and using one encoder everywhere keeps the output identical across devices. The WASM is inlined into `main.js` and compiled lazily on the first conversion, so plugin startup stays light.
+WebP uses libwebp compiled to WASM (`@jsquash/webp`, Apache-2.0 / BSD) on **every** platform. iOS can't produce WebP through `canvas.toBlob`, and using one encoder everywhere keeps the output identical across devices. The WASM is inlined into `main.js` and compiled lazily on the first conversion, so plugin startup stays light. The bundled Emscripten glue still contains `fetch`/`XMLHttpRequest` code for downloading a `.wasm` file, but it's unreachable: the module is always compiled from the inlined bytes. Bundled licenses live in `THIRD_PARTY_NOTICES` and are copied into the header of `main.js` at build time.
 
 ### Adding another output format (e.g. JPEG XL)
 
