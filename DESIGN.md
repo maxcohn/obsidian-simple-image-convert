@@ -63,10 +63,8 @@ An encoder implements a single interface:
 
 ```ts
 interface ImageEncoder {
-	id: string;
 	label: string;     // shown in the menu: "Convert to {label}"
 	extension: string;
-	mimeType: string;
 	encode(image: ImageData, quality: number): Promise<ArrayBuffer>;
 }
 ```

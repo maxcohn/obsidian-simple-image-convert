@@ -1,4 +1,6 @@
-import { Menu, Notice, Plugin, TAbstractFile, TFile } from 'obsidian';
+import { Menu, Plugin, TAbstractFile, TFile } from 'obsidian';
+import { convertImage } from './convert';
+import { webpEncoder } from './encoders/webp';
 import { inputMimeType } from './formats';
 import {
 	DEFAULT_SETTINGS,
@@ -26,12 +28,9 @@ export default class SimpleImageConvertPlugin extends Plugin {
 
 		menu.addItem((item) =>
 			item
-				.setTitle('Convert to WebP')
+				.setTitle(`Convert to ${webpEncoder.label}`)
 				.setIcon('image')
-				.onClick(() => {
-					// Placeholder until the conversion pipeline lands in phase 2.
-					new Notice(`Would convert ${file.name} at quality ${this.settings.quality}.`);
-				}),
+				.onClick(() => convertImage(this.app, file, webpEncoder, this.settings.quality)),
 		);
 	}
 }

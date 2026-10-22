@@ -15,5 +15,9 @@
 		"allowSyntheticDefaultImports": true,
 		"lib": ["ES2021", "DOM"]
 	},
-	"include": ["src/**/*.ts"]
+	"include": [
+		"src/**/*.ts",
+		// Global EmscriptenWasm types that the @jsquash codec typings rely on.
+		"node_modules/@jsquash/webp/emscripten-types.d.ts"
+	]
 }

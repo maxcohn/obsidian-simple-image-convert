@@ -34,7 +34,13 @@ const context = await esbuild.context({
 	],
 	format: 'cjs',
 	target: 'es2021',
+	// Inline WASM encoders into main.js; Obsidian plugins ship as a single file.
+	loader: { '.wasm': 'binary' },
 	logLevel: 'info',
+	logOverride: {
+		// The WASM glue reads import.meta.url, which encoders/webp.ts makes unused.
+		'empty-import-meta': 'silent',
+	},
 	sourcemap: prod ? false : 'inline',
 	treeShaking: true,
 	outfile: 'main.js',
