@@ -29,4 +29,13 @@ export default defineConfig(
 		},
 	},
 	...obsidianmd.configs.recommended,
+	{
+		rules: {
+			// Image format names keep their own casing in UI text.
+			'obsidianmd/ui/sentence-case': [
+				'warn',
+				{ enforceCamelCaseLower: true, ignoreWords: ['WebP'] },
+			],
+		},
+	},
 );
