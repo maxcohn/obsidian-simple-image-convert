@@ -12,7 +12,7 @@ export async function decodeImage(bytes: ArrayBuffer, mimeType: string): Promise
 	try {
 		const { width, height } = bitmap;
 		if (Platform.isIosApp && width * height > IOS_MAX_CANVAS_PIXELS) {
-			throw new Error(`${width}×${height} is larger than iOS can process.`);
+			throw new Error(`${width}x${height} is larger than iOS can process.`);
 		}
 
 		const canvas = createEl('canvas', { attr: { width, height } });

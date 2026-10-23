@@ -5,6 +5,6 @@
 	"minAppVersion": "1.13.0",
 	"description": "Convert and compress images to WebP from the file menu.",
 	"author": "Maxwell Cohn",
-	"authorUrl": "https://maxcohn.org",
+	"authorUrl": "https://max-cohn.com",
 	"isDesktopOnly": false
 }
