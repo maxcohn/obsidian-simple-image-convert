@@ -4,15 +4,28 @@ import { inputMimeType, isAnimated, withExtension } from './formats';
 const ascii = (text: string) => [...text].map((c) => c.charCodeAt(0));
 const uint32 = (n: number) => [(n >>> 24) & 0xff, (n >>> 16) & 0xff, (n >>> 8) & 0xff, n & 0xff];
 
-/** A 1x1 GIF with a global color table and the given number of frames. */
-function gif(frameCount: number, { loopExtension = false } = {}): Uint8Array {
-	const header = [...ascii('GIF89a'), 1, 0, 1, 0, 0x80, 0, 0, 0, 0, 0, 255, 255, 255];
+/**
+ * A 1x1 GIF with a global color table and the given number of frames. `colors`
+ * (two RGB entries) is used for every color table.
+ */
+function gif(
+	frameCount: number,
+	{
+		loopExtension = false,
+		localColorTable = false,
+		colors = [0, 0, 0, 255, 255, 255],
+		pixelData = [0x44, 0x01],
+	} = {},
+): Uint8Array {
+	const header = [...ascii('GIF89a'), 1, 0, 1, 0, 0x80, 0, 0, ...colors];
 	const loop = [0x21, 0xff, 11, ...ascii('NETSCAPE2.0'), 3, 1, 0, 0, 0];
 	const frame = [
 		// Graphic control extension.
 		0x21, 0xf9, 4, 0, 0, 0, 0, 0,
-		// Image descriptor, LZW minimum code size, one data sub-block, terminator.
-		0x2c, 0, 0, 0, 0, 1, 0, 1, 0, 0, 2, 2, 0x44, 0x01, 0,
+		// Image descriptor and optional local color table.
+		0x2c, 0, 0, 0, 0, 1, 0, 1, 0, ...(localColorTable ? [0x80, ...colors] : [0]),
+		// LZW minimum code size, one data sub-block, terminator.
+		2, pixelData.length, ...pixelData, 0,
 	];
 	const frames = Array.from({ length: frameCount }, () => frame).flat();
 	return Uint8Array.from([...header, ...(loopExtension ? loop : []), ...frames, 0x3b]);
@@ -58,6 +71,16 @@ describe('isAnimated', () => {
 		expect(isAnimated(gif(1, { loopExtension: true }), 'image/gif')).toBe(false);
 		expect(isAnimated(gif(2), 'image/gif')).toBe(true);
 		expect(isAnimated(gif(3, { loopExtension: true }), 'image/gif')).toBe(true);
+		expect(isAnimated(gif(1, { localColorTable: true }), 'image/gif')).toBe(false);
+		expect(isAnimated(gif(2, { localColorTable: true }), 'image/gif')).toBe(true);
+	});
+
+	it('reads GIF block structure rather than scanning for marker bytes', () => {
+		// Image descriptor, extension, and trailer markers inside colors and pixels.
+		const markers = { colors: [0x2c, 0x21, 0x3b, 0x2c, 0x21, 0x3b], pixelData: [0x2c, 0x3b, 0x21] };
+		expect(isAnimated(gif(1, markers), 'image/gif')).toBe(false);
+		expect(isAnimated(gif(1, { ...markers, localColorTable: true }), 'image/gif')).toBe(false);
+		expect(isAnimated(gif(2, markers), 'image/gif')).toBe(true);
 	});
 
 	it('detects the WebP animation flag', () => {
@@ -70,6 +93,11 @@ describe('isAnimated', () => {
 		expect(isAnimated(avif('avif', ['mif1', 'miaf']), 'image/avif')).toBe(false);
 		expect(isAnimated(avif('avis', ['avif', 'msf1']), 'image/avif')).toBe(true);
 		expect(isAnimated(avif('avif', ['mif1', 'avis']), 'image/avif')).toBe(true);
+	});
+
+	it('only reads AVIF brands from the ftyp box', () => {
+		const laterBox = Uint8Array.from([...avif('avif', ['mif1']), ...ascii('avis')]);
+		expect(isAnimated(laterBox, 'image/avif')).toBe(false);
 	});
 
 	it('treats truncated or other data as still', () => {
